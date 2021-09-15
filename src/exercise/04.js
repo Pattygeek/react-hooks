@@ -2,10 +2,31 @@
 // http://localhost:3000/isolated/exercise/04.js
 
 import * as React from 'react'
+import {useLocalStorageState} from '../utils'
 
-function Board() {
+function Board({squares, setSquares, selectSquare}) {
   // 🐨 squares is the state for this component. Add useState for squares
-  const squares = Array(9).fill(null)
+  // const squares = Array(9).fill(null)
+  // const getSquares = JSON.parse(localStorage.getItem('squares'))
+  // const [squares, setSquares] = React.useState(
+  //   () => getSquares || Array(9).fill(null),
+  // )
+  // const [state, setState] = useLocalStorageState(
+  //   'squares',
+  //   Array(9).fill(null),
+  //   {
+  //     serialize: JSON.stringify,
+  //     deserialize: JSON.parse,
+  //   },
+  // )
+
+  const nextValue = calculateNextValue(squares)
+  const winner = calculateWinner(squares)
+  const status = calculateStatus(winner, squares, nextValue)
+
+  // React.useEffect(() => {
+  //   localStorage.setItem('squares', JSON.stringify(squares))
+  // }, [squares])
 
   // 🐨 We'll need the following bits of derived state:
   // - nextValue ('X' or 'O')
@@ -31,12 +52,16 @@ function Board() {
     // 💰 `squaresCopy[square] = nextValue`
     //
     // 🐨 set the squares to your copy
+    const squaresCopy = [...squares]
+    squaresCopy[square] = nextValue
+    setSquares(squaresCopy)
   }
 
-  function restart() {
-    // 🐨 reset the squares
-    // 💰 `Array(9).fill(null)` will do it!
-  }
+  // function restart() {
+  //   // 🐨 reset the squares
+  //   // 💰 `Array(9).fill(null)` will do it!
+  //    setSquares(Array(9).fill(null))
+  // }
 
   function renderSquare(i) {
     return (
@@ -49,7 +74,7 @@ function Board() {
   return (
     <div>
       {/* 🐨 put the status in the div below */}
-      <div className="status">STATUS</div>
+      <div className="status">{status}</div>
       <div className="board-row">
         {renderSquare(0)}
         {renderSquare(1)}
@@ -65,19 +90,44 @@ function Board() {
         {renderSquare(7)}
         {renderSquare(8)}
       </div>
-      <button className="restart" onClick={restart}>
+      {/* <button className="restart" onClick={restart}>
         restart
-      </button>
+      </button> */}
     </div>
   )
 }
 
 function Game() {
+  const [currentSquares, setCurrentSquares] = useLocalStorageState(
+    'squares',
+    Array(9).fill(null),
+    {
+      serialize: JSON.stringify,
+      deserialize: JSON.parse,
+    },
+  )
+
+  function restart() {
+    // 🐨 reset the squares
+    // 💰 `Array(9).fill(null)` will do it!
+    setCurrentSquares(Array(9).fill(null))
+  }
   return (
     <div className="game">
       <div className="game-board">
-        <Board />
+        <Board
+          onClick={selectSquare}
+          squares={currentSquares}
+          setSquares={setCurrentSquares}
+        />
+        <button className="restart" onClick={restart}>
+          restart
+        </button>
       </div>
+      {/* <div className="game-info">
+        <div>{status}</div>
+        <ol>{moves}</ol>
+      </div> */}
     </div>
   )
 }
