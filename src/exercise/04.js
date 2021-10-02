@@ -4,7 +4,7 @@
 import * as React from 'react'
 import {useLocalStorageState} from '../utils'
 
-function Board({squares, setSquares, selectSquare}) {
+function Board({squares, selectSquare}) {
   // 🐨 squares is the state for this component. Add useState for squares
   // const squares = Array(9).fill(null)
   // const getSquares = JSON.parse(localStorage.getItem('squares'))
@@ -20,9 +20,9 @@ function Board({squares, setSquares, selectSquare}) {
   //   },
   // )
 
-  const nextValue = calculateNextValue(squares)
-  const winner = calculateWinner(squares)
-  const status = calculateStatus(winner, squares, nextValue)
+  // const nextValue = calculateNextValue(squares)
+  // const winner = calculateWinner(squares)
+  // const status = calculateStatus(winner, squares, nextValue)
 
   // React.useEffect(() => {
   //   localStorage.setItem('squares', JSON.stringify(squares))
@@ -37,25 +37,11 @@ function Board({squares, setSquares, selectSquare}) {
 
   // This is the function your square click handler will call. `square` should
   // be an index. So if they click the center square, this will be `4`.
-  function selectSquare(square) {
-    // 🐨 first, if there's already winner or there's already a value at the
-    // given square index (like someone clicked a square that's already been
-    // clicked), then return early so we don't make any state changes
-    //
-    // 🦉 It's typically a bad idea to mutate or directly change state in React.
-    // Doing so can lead to subtle bugs that can easily slip into production.
-    //
-    // 🐨 make a copy of the squares array
-    // 💰 `[...squares]` will do it!)
-    //
-    // 🐨 set the value of the square that was selected
-    // 💰 `squaresCopy[square] = nextValue`
-    //
-    // 🐨 set the squares to your copy
-    const squaresCopy = [...squares]
-    squaresCopy[square] = nextValue
-    setSquares(squaresCopy)
-  }
+  // function selectSquare(square) {
+  //   const squaresCopy = [...squares]
+  //   squaresCopy[square] = nextValue
+  //   setSquares(squaresCopy)
+  // }
 
   // function restart() {
   //   // 🐨 reset the squares
@@ -74,7 +60,7 @@ function Board({squares, setSquares, selectSquare}) {
   return (
     <div>
       {/* 🐨 put the status in the div below */}
-      <div className="status">{status}</div>
+      {/* <div className="status">{status}</div> */}
       <div className="board-row">
         {renderSquare(0)}
         {renderSquare(1)}
@@ -112,22 +98,28 @@ function Game() {
     // 💰 `Array(9).fill(null)` will do it!
     setCurrentSquares(Array(9).fill(null))
   }
+
+  const nextValue = calculateNextValue(currentSquares)
+  const winner = calculateWinner(currentSquares)
+  const status = calculateStatus(winner, currentSquares, nextValue)
+
+  function selectSquare(square) {
+    const squaresCopy = [...currentSquares]
+    squaresCopy[square] = nextValue
+    setCurrentSquares(squaresCopy)
+  }
   return (
     <div className="game">
       <div className="game-board">
-        <Board
-          onClick={selectSquare}
-          squares={currentSquares}
-          setSquares={setCurrentSquares}
-        />
+        <Board onClick={selectSquare} squares={currentSquares} />
         <button className="restart" onClick={restart}>
           restart
         </button>
       </div>
-      {/* <div className="game-info">
+      <div className="game-info">
         <div>{status}</div>
-        <ol>{moves}</ol>
-      </div> */}
+        {/* <ol>{moves}</ol> */}
+      </div>
     </div>
   )
 }
